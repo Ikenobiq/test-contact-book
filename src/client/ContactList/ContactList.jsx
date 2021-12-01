@@ -1,21 +1,25 @@
-import { Link, useLocation } from "react-router-dom";
-import contacts from "../../json/contacts.json";
+import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { removeContact } from "../../redux/actions";
+
+import Button from "../../shared/components/Button/Button";
+
 const ContactList = () => {
-  const location = useLocation();
+  const contacts = useSelector((store) => store.items);
+
+  const dispatch = useDispatch();
+  const remove = () => {
+    dispatch(removeContact(contacts.id));
+  };
   return (
     <div>
       <ul>
         {contacts.map((contact) => (
           <li key={contact.id}>
-            <Link
-              to={{
-                parhName: `/contact/${contact.id}`,
-                state: {
-                  from: location,
-                },
-              }}>
-              {contact.name}
+            <Link to="/contact/:contactID">
+              {contact.firstName}, {contact.lastName}, {contact.number}
             </Link>
+            <Button text="Delete" variant="primary" onClick={remove} />
           </li>
         ))}
       </ul>
