@@ -1,49 +1,31 @@
 import { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import styles from "./AddContactForm.module.scss";
-import { addContact } from "../../redux/actions";
 import Button from "../../shared/components/Button/Button";
 
-const Form = () => {
-  const contacts = useSelector((store) => store.items);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [number, setNumber] = useState("");
-  const dispatch = useDispatch();
+const Form = ({ onSubmit, resetFormOnSubmit, buttonText, ...rest }) => {
+  const [firstName, setFirstName] = useState(rest.firstName);
+  const [lastName, setLastName] = useState(rest.lastName);
+  const [number, setNumber] = useState(rest.number);
 
-  const addContacts = (firstName, lastName, number) => {
-    const newContact = contacts.find((contact) => {
-      return contact.lastName === lastName || contact.number === number;
-    });
-    if (newContact) {
-      alert(`${lastName} is already in contacts`);
-      return;
-    }
-    const action = addContact({ firstName, lastName, number });
-    dispatch(action);
-  };
-  const handlechangeFirstName = (e) => {
-    setFirstName(e.target.value);
-  };
-  const handlechangeLastName = (e) => {
-    setLastName(e.target.value);
-  };
-  const handlechangeNumber = (e) => {
-    setNumber(e.target.value);
-  };
+  const handleChangeFirstName = (e) => setFirstName(e.target.value);
+  const handleChangeLastName = (e) => setLastName(e.target.value);
+  const handleChangeNumber = (e) => setNumber(e.target.value);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    addContacts(firstName, lastName, number);
-    setFirstName("");
-    setLastName("");
-    setNumber("");
+    onSubmit(firstName, lastName, number);
+    if (resetFormOnSubmit) {
+      setFirstName("");
+      setLastName("");
+      setNumber("");
+    }
   };
+
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <h3 className={styles.name}>First name</h3>
       <input
-        onChange={handlechangeFirstName}
+        onChange={handleChangeFirstName}
         value={firstName}
         className={styles.inputName}
         type="text"
@@ -54,7 +36,7 @@ const Form = () => {
       />
       <h3 className={styles.name}>Last name</h3>
       <input
-        onChange={handlechangeLastName}
+        onChange={handleChangeLastName}
         value={lastName}
         className={styles.inputName}
         type="text"
@@ -65,7 +47,7 @@ const Form = () => {
       />
       <h3 className={styles.name}>Number</h3>
       <input
-        onChange={handlechangeNumber}
+        onChange={handleChangeNumber}
         value={number}
         type="tel"
         className={styles.inputNumber}
@@ -74,7 +56,7 @@ const Form = () => {
         title="Номер телефона должен состоять из цифр и может содержать пробелы, тире, круглые скобки и может начинаться с +"
         required
       />
-      <Button text="Add contact" variant="secondary" type="submit" />
+      <Button text={buttonText} variant="secondary" type="submit" />
     </form>
   );
 };
