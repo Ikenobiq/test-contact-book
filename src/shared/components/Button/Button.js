@@ -4,13 +4,14 @@ const types = {
   primary: styles.buttonPrimary,
   secondary: styles.buttonSecondary,
 };
-const Button = ({ className, text, onClick, variant, type }) => {
+const Button = ({ className, text, onClick, variant, type, disabled }) => {
   const selectedClassName = types[variant];
   return (
     <button
       type={type}
       onClick={onClick}
       className={`${styles.button} ${selectedClassName} ${className}`}
+      disabled={disabled}
     >
       {text}
     </button>

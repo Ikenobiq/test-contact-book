@@ -1,32 +1,37 @@
-import { Link } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { removeContact } from "../../redux/actions";
+import {Link} from "react-router-dom";
+import {useSelector} from "react-redux";
+import {useCallback} from "react";
+import Checkbox from "../../shared/components/Checkbox";
 
-import Button from "../../shared/components/Button/Button";
 
-const ContactList = () => {
-  const contacts = useSelector((store) => store.items);
-  const dispatch = useDispatch();
-  const remove = (id) => dispatch(removeContact(id));
-  return (
-    <div>
-      <ul>
-        {contacts.map((contact) => (
-          <li key={contact.id}>
-            <Link to={`/contact/${contact.id}`}>
-              {contact.firstName}, {contact.lastName}, {contact.number}
-            </Link>
-            <Button
-              text="Delete"
-              variant="primary"
-              onClick={() => {
-                remove(contact.id);
-              }}
-            />
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+const ContactList = ({selectedContactIds, onSelect}) => {
+    const contacts = useSelector((store) => store.items);
+
+    const handleChangeChecked = useCallback((checked, checkboxIndex, contactId) => {
+        if (checked)
+            onSelect(prev => [...prev, contactId])
+        else
+            onSelect(prev => prev.filter(id => id !== contactId))
+    }, [onSelect])
+
+    return (
+        <div>
+            <ul>
+                {contacts.map((contact, index) => {
+                    const contactId = contact.id;
+                    return (
+                        <li key={contact.id}>
+                            <Link to={`/contact/${contactId}`}>
+                                {contact.firstName}, {contact.lastName}, {contact.number}
+                            </Link>
+                            <Checkbox
+                                checked={selectedContactIds.some(id => id === contactId)}
+                                onChange={e => handleChangeChecked(e.target.checked, index, contactId)}/>
+                        </li>
+                    );
+                })}
+            </ul>
+        </div>
+    );
 };
 export default ContactList;
